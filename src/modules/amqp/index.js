@@ -1,6 +1,7 @@
 'use strict';
 
 const Amqplib = require('amqplib');
+const Monitoring = require('../monitoring');
 
 // Get process environments
 const { AMQP_URL } = process.env;
@@ -23,10 +24,10 @@ class AMQP {
         const queue = await channel.assertQueue(targetQueue);
 
         console.log("Connection to AMQP server was successful");
-        return { connection, channel, queue };
+        return { connection, channel, queue, targetQueue };
     }
 
-    constructor({ connection, channel, queue }) {
+    constructor({ connection, channel, queue, targetQueue }) {
         if (typeof AMQP.instance !== "undefined") {
             return AMQP.instance;
         }
@@ -34,6 +35,14 @@ class AMQP {
         this.connection = connection;
         this.channel = channel;
         this.queue = queue;
+        this.targetQueue = targetQueue;
+
+        channel.consume(targetQueue, async (msg) => {
+            if (msg !== null) {
+                await Monitoring.handleNewMessage(msg.content.toString())
+                channel.ack(msg);
+            }
+        });
 
         AMQP.instance = this;
         return this;
