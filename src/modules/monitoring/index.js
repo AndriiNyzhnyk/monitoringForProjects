@@ -1,8 +1,8 @@
 'use strict';
 
 const self = module.exports = {
-    handleNewMessage: async (msg) => {
+    handleNewMessage: (msg) => {
         console.log(msg);
-        console.log(new Date())
+        console.log(new Date());
     }
 }

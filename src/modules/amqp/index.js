@@ -8,12 +8,12 @@ const { AMQP_URL } = process.env;
 
 class AMQP {
     static async getInstance() {
-        if (typeof AMQP.instance === "undefined") {
+        if (typeof AMQP.instance === 'undefined') {
             const data = await AMQP._initializeConnection();
             return new AMQP(data);
-        } else {
-            return AMQP.instance;
         }
+
+        return AMQP.instance;
     }
 
     static async _initializeConnection() {
@@ -23,12 +23,12 @@ class AMQP {
         const channel = await connection.createChannel();
         const queue = await channel.assertQueue(targetQueue);
 
-        console.log("Connection to AMQP server was successful");
+        console.log('Connection to AMQP server was successful');
         return { connection, channel, queue, targetQueue };
     }
 
     constructor({ connection, channel, queue, targetQueue }) {
-        if (typeof AMQP.instance !== "undefined") {
+        if (typeof AMQP.instance !== 'undefined') {
             return AMQP.instance;
         }
 
@@ -37,9 +37,9 @@ class AMQP {
         this.queue = queue;
         this.targetQueue = targetQueue;
 
-        channel.consume(targetQueue, async (msg) => {
+        channel.consume(targetQueue, (msg) => {
             if (msg !== null) {
-                await Monitoring.handleNewMessage(msg.content.toString())
+                Monitoring.handleNewMessage(msg.content.toString());
                 channel.ack(msg);
             }
         });

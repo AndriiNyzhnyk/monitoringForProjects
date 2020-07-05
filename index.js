@@ -1,9 +1,9 @@
-`use strict`;
+'use strict';
 
 const { launch } = require('./src/server');
 
 launch()
-    .then(server => {
+    .then( (server) => {
         console.log(`Server up and running at: ${server.info.uri}`);
     })
     .catch((err) => {
